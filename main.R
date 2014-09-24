@@ -2,7 +2,7 @@ library(class)
 library(gmodels)
 
 # read the csv file
-wdbc <- read.csv("wdbc.data", stringAsFactors = FALSE)
+wdbc <- read.csv("wdbc.data", stringsAsFactors = FALSE)
 
 # remove the id column
 wdbc <- wdbc[-1]
@@ -33,3 +33,17 @@ wdbcTest <- wdbcNormalized[428:569, ]
 # store the diagnosis factor into a separate variable
 wdbcTrainingLabels <- wdbc[1:427, 1]
 wdbcTestLabels <- wdbc[428:569, 1]
+
+# use the knn function of the class package
+k <- 21
+wdbcPredictedClass <- knn(train = wdbcTraining,
+                          test = wdbcTest,
+                          cl = wdbcTrainingLabels,
+                          k)
+
+# compute the percentage of right predictions
+actualVsPredicted <- cbind(wdbcTestLabels, wdbcPredictedClass)
+colnames(actualVsPredicted) <- c('actual', 'predicted')
+percentage <- sum(apply(actualVsPredicted, 1,
+                        function(row) { ifelse(row[1] == row[2], 1, 0) }
+                        )) / dim(actualVsPredicted)[1]
